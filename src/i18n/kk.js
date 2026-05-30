@@ -97,6 +97,50 @@ export const kk = {
     footer: 'Ресторан, кафе және кофехана бизнесіне арналған басқару жүйесі.',
   },
 
+  dashboard: {
+    revenue: 'Бүгінгі сатылым',
+    ordersCount: 'Заказ саны',
+    avgCheck: 'Орташа чек',
+    online: 'Online заказдар',
+    offline: 'Offline заказдар',
+    topProducts: 'Ең көп сатылған',
+    recentOrders: 'Соңғы заказдар',
+    customersCount: 'Клиенттер',
+    noData: 'Дерек жоқ. Демода заказ жасап көріңіз.',
+    sold: 'сатылды',
+  },
+
+  analytics: {
+    title: 'Аналитика',
+    revenueByCategory: 'Категория бойынша сатылым',
+    ordersBySource: 'Көзі бойынша заказдар',
+    statusBreakdown: 'Статус бойынша',
+    noData: 'Аналитика үшін дерек жеткіліксіз.',
+  },
+
+  customers: {
+    title: 'Клиенттер',
+    name: 'Клиент',
+    phone: 'Телефон',
+    orders: 'Заказ саны',
+    total: 'Жалпы сумма',
+    note: 'Қазіргі клиент базаңызды осы жүйеге көшіруге болады.',
+  },
+
+  menuManage: {
+    title: 'Меню басқару',
+    product: 'Өнім',
+    category: 'Категория',
+    price: 'Баға',
+    status: 'Күй',
+    available: 'Бар',
+    unavailable: 'Жоқ',
+    editPrice: 'Бағаны өзгерту',
+    toggle: 'Қолжетімділік',
+    save: 'Сақтау',
+    cancel: 'Болдырмау',
+  },
+
   menu: {
     title: 'Online меню',
     subtitle: 'Сүйікті тағамыңызды таңдаңыз',
