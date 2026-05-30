@@ -204,7 +204,7 @@ Online: 18          Offline: 56
 Demo layout topbar:
 
 ```text
-[Demo Mode]  Aroma Coffee   [Role switch ▾]   [Demo data reset]
+[Demo Mode]  Sana Coffee   [Role switch ▾]   [Demo data reset]
 ```
 
 ---

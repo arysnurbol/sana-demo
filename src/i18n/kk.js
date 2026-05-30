@@ -3,7 +3,7 @@
 
 export const kk = {
   brand: 'Sana',
-  company: 'Aroma Coffee',
+  company: 'Sana Coffee',
   demoMode: 'Demo Mode',
 
   nav: {
@@ -29,6 +29,27 @@ export const kk = {
     createOrder: 'Заказ жасау',
     resetDemo: 'Демоны бастапқы күйге қайтару',
     roleSwitch: 'Рөл ауыстыру',
+    clear: 'Тазалау',
+    back: 'Артқа',
+  },
+
+  pos: {
+    title: 'POS / Кассир',
+    cart: 'Себет',
+    emptyCart: 'Себет бос. Өнім таңдаңыз.',
+    orderType: 'Заказ түрі',
+    table: 'Стол',
+    tablePlaceholder: 'Стол нөмірі',
+    payment: 'Төлем',
+    total: 'Барлығы',
+    qty: 'саны',
+    notAvailable: 'Жоқ',
+    orderCreated: 'Заказ жасалды',
+    paymentMethods: {
+      kaspi: 'Kaspi',
+      cash: 'Қолма-қол',
+      card: 'Карта',
+    },
   },
 
   order: {
