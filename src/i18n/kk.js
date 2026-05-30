@@ -97,6 +97,28 @@ export const kk = {
     footer: 'Ресторан, кафе және кофехана бизнесіне арналған басқару жүйесі.',
   },
 
+  menu: {
+    title: 'Online меню',
+    subtitle: 'Сүйікті тағамыңызды таңдаңыз',
+    add: 'Қосу',
+    cart: 'Себет',
+    viewCart: 'Себетті көру',
+    emptyCart: 'Себет бос',
+    checkout: 'Заказ беру',
+    yourOrder: 'Сіздің заказ',
+    name: 'Атыңыз',
+    namePlaceholder: 'Атыңызды енгізіңіз',
+    phone: 'Телефон',
+    phonePlaceholder: '+7 ___ ___ __ __',
+    submit: 'Заказды жіберу',
+    total: 'Барлығы',
+    success: 'Заказыңыз қабылданды!',
+    successText: 'Біз заказыңызды дайындап жатырмыз. Рахмет!',
+    orderNumber: 'Заказ нөмірі',
+    newOrder: 'Жаңа заказ',
+    required: 'Аты мен телефонды толтырыңыз',
+  },
+
   pos: {
     title: 'POS / Кассир',
     cart: 'Себет',
