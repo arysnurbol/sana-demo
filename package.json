@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "demo": "node scripts/demo-walkthrough.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -16,10 +17,12 @@
     "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "playwright": "^1.60.0",
     "tailwindcss": "^4.0.0",
     "vite": "^5.4.8"
   }
