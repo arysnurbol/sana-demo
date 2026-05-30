@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import kk from '../i18n/kk.js'
+import { useT } from '../i18n'
 import useStore from '../store/useStore.js'
 import { formatPrice } from '../utils/format.js'
 
@@ -8,6 +8,7 @@ const ORDER_TYPES = ['dine_in', 'takeaway', 'delivery']
 const PAYMENTS = ['kaspi', 'cash', 'card']
 
 export default function Pos() {
+  const t = useT()
   const navigate = useNavigate()
   const categories = useStore((s) => s.categories)
   const products = useStore((s) => s.products)
@@ -75,14 +76,14 @@ export default function Pos() {
             onClick={() => navigate('/demo')}
             className="text-sm font-medium text-slate-500 hover:text-slate-900"
           >
-            ← {kk.actions.back}
+            ← {t.actions.back}
           </button>
           <span className="rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
-            {kk.demoMode}
+            {t.demoMode}
           </span>
-          <span className="font-semibold text-slate-800">{kk.pos.title}</span>
+          <span className="font-semibold text-slate-800">{t.pos.title}</span>
         </div>
-        <span className="text-sm text-slate-400">{kk.company}</span>
+        <span className="text-sm text-slate-400">{t.company}</span>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
@@ -122,7 +123,7 @@ export default function Pos() {
                 <span className="mt-1 text-sm text-slate-500">{formatPrice(p.price)}</span>
                 {!p.available && (
                   <span className="mt-2 rounded bg-rose-100 px-1.5 py-0.5 text-xs text-rose-600">
-                    {kk.pos.notAvailable}
+                    {t.pos.notAvailable}
                   </span>
                 )}
               </button>
@@ -133,13 +134,13 @@ export default function Pos() {
         {/* Оң жақ: себет */}
         <aside className="flex w-80 shrink-0 flex-col border-l border-slate-200 bg-white">
           <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">
-            <h2 className="font-semibold text-slate-900">{kk.pos.cart}</h2>
+            <h2 className="font-semibold text-slate-900">{t.pos.cart}</h2>
             {cart.length > 0 && (
               <button
                 onClick={clearCart}
                 className="text-xs font-medium text-rose-500 hover:text-rose-700"
               >
-                {kk.actions.clear}
+                {t.actions.clear}
               </button>
             )}
           </div>
@@ -147,7 +148,7 @@ export default function Pos() {
           {/* Себет тізімі */}
           <div className="flex-1 overflow-y-auto px-5 py-3">
             {cart.length === 0 ? (
-              <p className="mt-6 text-center text-sm text-slate-400">{kk.pos.emptyCart}</p>
+              <p className="mt-6 text-center text-sm text-slate-400">{t.pos.emptyCart}</p>
             ) : (
               <ul className="space-y-3">
                 {cart.map((i) => (
@@ -180,19 +181,19 @@ export default function Pos() {
           {/* Заказ параметрлері */}
           <div className="border-t border-slate-200 px-5 py-4">
             {/* Заказ түрі */}
-            <label className="text-xs font-medium text-slate-500">{kk.pos.orderType}</label>
+            <label className="text-xs font-medium text-slate-500">{t.pos.orderType}</label>
             <div className="mt-1 flex gap-1.5">
-              {ORDER_TYPES.map((t) => (
+              {ORDER_TYPES.map((ty) => (
                 <button
-                  key={t}
-                  onClick={() => setOrderType(t)}
+                  key={ty}
+                  onClick={() => setOrderType(ty)}
                   className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium transition ${
-                    orderType === t
+                    orderType === ty
                       ? 'bg-slate-900 text-white'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
-                  {kk.order.type[t]}
+                  {t.order.type[ty]}
                 </button>
               ))}
             </div>
@@ -200,11 +201,11 @@ export default function Pos() {
             {/* Стол (тек залда ішу) */}
             {orderType === 'dine_in' && (
               <div className="mt-3">
-                <label className="text-xs font-medium text-slate-500">{kk.pos.table}</label>
+                <label className="text-xs font-medium text-slate-500">{t.pos.table}</label>
                 <input
                   value={table}
                   onChange={(e) => setTable(e.target.value)}
-                  placeholder={kk.pos.tablePlaceholder}
+                  placeholder={t.pos.tablePlaceholder}
                   className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:border-slate-900 focus:outline-none"
                 />
               </div>
@@ -212,7 +213,7 @@ export default function Pos() {
 
             {/* Төлем */}
             <label className="mt-3 block text-xs font-medium text-slate-500">
-              {kk.pos.payment}
+              {t.pos.payment}
             </label>
             <div className="mt-1 flex gap-1.5">
               {PAYMENTS.map((p) => (
@@ -225,14 +226,14 @@ export default function Pos() {
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
-                  {kk.pos.paymentMethods[p]}
+                  {t.pos.paymentMethods[p]}
                 </button>
               ))}
             </div>
 
             {/* Итог + заказ жасау */}
             <div className="mt-4 flex items-center justify-between">
-              <span className="text-sm text-slate-500">{kk.pos.total}</span>
+              <span className="text-sm text-slate-500">{t.pos.total}</span>
               <span className="text-lg font-bold text-slate-900">{formatPrice(total)}</span>
             </div>
             <button
@@ -240,7 +241,7 @@ export default function Pos() {
               disabled={cart.length === 0}
               className="mt-3 w-full rounded-xl bg-slate-900 py-3 font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
-              {kk.actions.createOrder}
+              {t.actions.createOrder}
             </button>
           </div>
         </aside>
@@ -253,23 +254,23 @@ export default function Pos() {
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-2xl">
               ✓
             </div>
-            <h3 className="mt-4 text-lg font-bold text-slate-900">{kk.pos.orderCreated}</h3>
+            <h3 className="mt-4 text-lg font-bold text-slate-900">{t.pos.orderCreated}</h3>
             <p className="mt-1 text-2xl font-bold text-slate-900">#{confirmation.number}</p>
             <p className="mt-1 text-sm text-slate-500">
-              {formatPrice(confirmation.total)} · {kk.order.type[confirmation.type]}
+              {formatPrice(confirmation.total)} · {t.order.type[confirmation.type]}
             </p>
             <div className="mt-5 flex gap-2">
               <button
                 onClick={() => setConfirmation(null)}
                 className="flex-1 rounded-xl border border-slate-200 py-2.5 font-medium text-slate-700 hover:bg-slate-50"
               >
-                {kk.actions.createOrder}
+                {t.actions.createOrder}
               </button>
               <button
                 onClick={() => navigate('/demo/kitchen')}
                 className="flex-1 rounded-xl bg-slate-900 py-2.5 font-medium text-white hover:bg-slate-700"
               >
-                {kk.roles.kitchen} →
+                {t.roles.kitchen} →
               </button>
             </div>
           </div>

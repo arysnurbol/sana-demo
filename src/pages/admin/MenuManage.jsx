@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
-import kk from '../../i18n/kk.js'
+import { useT } from '../../i18n'
 import useStore from '../../store/useStore.js'
 import { formatPrice } from '../../utils/format.js'
 
 export default function MenuManage() {
+  const t = useT()
   const categories = useStore((s) => s.categories)
   const products = useStore((s) => s.products)
   const updateProduct = useStore((s) => s.updateProduct)
@@ -32,7 +33,7 @@ export default function MenuManage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">{kk.menuManage.title}</h1>
+      <h1 className="text-2xl font-bold text-slate-900">{t.menuManage.title}</h1>
       <p className="mt-1 text-sm text-slate-500">
         Баға өзгерсе — POS пен Online меню бірден жаңарады.
       </p>
@@ -41,10 +42,10 @@ export default function MenuManage() {
         <table className="w-full text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
             <tr>
-              <th className="px-4 py-3 font-medium">{kk.menuManage.product}</th>
-              <th className="px-4 py-3 font-medium">{kk.menuManage.category}</th>
-              <th className="px-4 py-3 font-medium">{kk.menuManage.price}</th>
-              <th className="px-4 py-3 font-medium">{kk.menuManage.status}</th>
+              <th className="px-4 py-3 font-medium">{t.menuManage.product}</th>
+              <th className="px-4 py-3 font-medium">{t.menuManage.category}</th>
+              <th className="px-4 py-3 font-medium">{t.menuManage.price}</th>
+              <th className="px-4 py-3 font-medium">{t.menuManage.status}</th>
               <th className="px-4 py-3 text-right font-medium"></th>
             </tr>
           </thead>
@@ -78,7 +79,7 @@ export default function MenuManage() {
                         : 'bg-rose-100 text-rose-700 hover:bg-rose-200'
                     }`}
                   >
-                    {p.available ? kk.menuManage.available : kk.menuManage.unavailable}
+                    {p.available ? t.menuManage.available : t.menuManage.unavailable}
                   </button>
                 </td>
                 <td className="px-4 py-3 text-right">
@@ -88,13 +89,13 @@ export default function MenuManage() {
                         onClick={() => savePrice(p.id)}
                         className="rounded-lg bg-slate-900 px-3 py-1 text-xs font-medium text-white hover:bg-slate-700"
                       >
-                        {kk.menuManage.save}
+                        {t.menuManage.save}
                       </button>
                       <button
                         onClick={() => setEditId(null)}
                         className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
                       >
-                        {kk.menuManage.cancel}
+                        {t.menuManage.cancel}
                       </button>
                     </div>
                   ) : (
@@ -102,7 +103,7 @@ export default function MenuManage() {
                       onClick={() => startEdit(p)}
                       className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
                     >
-                      {kk.menuManage.editPrice}
+                      {t.menuManage.editPrice}
                     </button>
                   )}
                 </td>

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import kk from '../../i18n/kk.js'
+import { useT } from '../../i18n'
 import useStore from '../../store/useStore.js'
 import { formatPrice, minutesSince } from '../../utils/format.js'
 import { computeStats } from '../../utils/stats.js'
@@ -23,6 +23,7 @@ function StatCard({ label, value, accent }) {
 }
 
 export default function Dashboard() {
+  const t = useT()
   const orders = useStore((s) => s.orders)
   const customers = useStore((s) => s.customers)
   useCrossTabSync() // жаңа заказдар realtime есепке кіреді
@@ -33,24 +34,24 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">{kk.nav.dashboard}</h1>
+      <h1 className="text-2xl font-bold text-slate-900">{t.nav.dashboard}</h1>
 
       {/* Stat карталары */}
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-3">
-        <StatCard label={kk.dashboard.revenue} value={formatPrice(stats.revenue)} />
-        <StatCard label={kk.dashboard.ordersCount} value={stats.ordersCount} />
-        <StatCard label={kk.dashboard.avgCheck} value={formatPrice(stats.avgCheck)} />
-        <StatCard label={kk.dashboard.online} value={stats.online} accent="text-violet-600" />
-        <StatCard label={kk.dashboard.offline} value={stats.offline} accent="text-slate-700" />
-        <StatCard label={kk.dashboard.customersCount} value={stats.customersCount} />
+        <StatCard label={t.dashboard.revenue} value={formatPrice(stats.revenue)} />
+        <StatCard label={t.dashboard.ordersCount} value={stats.ordersCount} />
+        <StatCard label={t.dashboard.avgCheck} value={formatPrice(stats.avgCheck)} />
+        <StatCard label={t.dashboard.online} value={stats.online} accent="text-violet-600" />
+        <StatCard label={t.dashboard.offline} value={stats.offline} accent="text-slate-700" />
+        <StatCard label={t.dashboard.customersCount} value={stats.customersCount} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         {/* Ең көп сатылған */}
         <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <h2 className="font-semibold text-slate-900">{kk.dashboard.topProducts}</h2>
+          <h2 className="font-semibold text-slate-900">{t.dashboard.topProducts}</h2>
           {stats.topProducts.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-400">{kk.dashboard.noData}</p>
+            <p className="mt-4 text-sm text-slate-400">{t.dashboard.noData}</p>
           ) : (
             <div className="mt-4 space-y-3">
               {stats.topProducts.map((p) => (
@@ -58,7 +59,7 @@ export default function Dashboard() {
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-700">{p.name}</span>
                     <span className="text-slate-500">
-                      {p.qty} {kk.dashboard.sold}
+                      {p.qty} {t.dashboard.sold}
                     </span>
                   </div>
                   <div className="mt-1 h-2 rounded-full bg-slate-100">
@@ -76,13 +77,13 @@ export default function Dashboard() {
         {/* Соңғы заказдар */}
         <div className="rounded-2xl border border-slate-200 bg-white p-5">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-slate-900">{kk.dashboard.recentOrders}</h2>
+            <h2 className="font-semibold text-slate-900">{t.dashboard.recentOrders}</h2>
             <Link to="/demo/admin/orders" className="text-sm font-medium text-slate-500 hover:text-slate-900">
-              {kk.nav.orders} →
+              {t.nav.orders} →
             </Link>
           </div>
           {recent.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-400">{kk.dashboard.noData}</p>
+            <p className="mt-4 text-sm text-slate-400">{t.dashboard.noData}</p>
           ) : (
             <ul className="mt-4 divide-y divide-slate-100">
               {recent.map((o) => {
@@ -95,10 +96,10 @@ export default function Dashboard() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[o.status]}`}>
-                        {kk.order.status[o.status]}
+                        {t.order.status[o.status]}
                       </span>
                       <span className="text-xs text-slate-400">
-                        {mins === 0 ? kk.kitchen.justNow : `${mins} ${kk.kitchen.minutesAgo}`}
+                        {mins === 0 ? t.kitchen.justNow : `${mins} ${t.kitchen.minutesAgo}`}
                       </span>
                     </div>
                   </li>

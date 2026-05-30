@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import kk from '../i18n/kk.js'
+import { useT } from '../i18n'
 import useStore from '../store/useStore.js'
 import { minutesSince } from '../utils/format.js'
 import useCrossTabSync from '../hooks/useCrossTabSync.js'
 
-// Канбан бағандары: статус → келесі статус + батырма мәтіні.
+// Канбан бағандары: статус → келесі статус + accent (мәтін i18n-нен).
 const COLUMNS = [
-  { status: 'new', next: 'cooking', action: kk.kitchen.startCooking, accent: 'sky' },
-  { status: 'cooking', next: 'ready', action: kk.kitchen.markReady, accent: 'amber' },
-  { status: 'ready', next: 'done', action: kk.kitchen.complete, accent: 'emerald' },
+  { status: 'new', next: 'cooking', actionKey: 'startCooking', accent: 'sky' },
+  { status: 'cooking', next: 'ready', actionKey: 'markReady', accent: 'amber' },
+  { status: 'ready', next: 'done', actionKey: 'complete', accent: 'emerald' },
 ]
 
 const ACCENTS = {
@@ -25,6 +25,7 @@ const BTN = {
 }
 
 export default function Kitchen() {
+  const t = useT()
   const navigate = useNavigate()
   const orders = useStore((s) => s.orders)
   const setOrderStatus = useStore((s) => s.setOrderStatus)
@@ -35,7 +36,7 @@ export default function Kitchen() {
   // Картадағы "X мин бұрын" жаңарып тұруы үшін минут сайын қайта рендер.
   const [, setTick] = useState(0)
   useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 30000)
+    const id = setInterval(() => setTick((tk) => tk + 1), 30000)
     return () => clearInterval(id)
   }, [])
 
@@ -48,14 +49,14 @@ export default function Kitchen() {
             onClick={() => navigate('/demo')}
             className="text-sm font-medium text-slate-400 hover:text-white"
           >
-            ← {kk.actions.back}
+            ← {t.actions.back}
           </button>
           <span className="rounded-md bg-amber-500/20 px-2 py-1 text-xs font-semibold text-amber-300">
-            {kk.demoMode}
+            {t.demoMode}
           </span>
-          <span className="font-semibold">{kk.kitchen.title}</span>
+          <span className="font-semibold">{t.kitchen.title}</span>
         </div>
-        <span className="text-sm text-slate-500">{kk.company}</span>
+        <span className="text-sm text-slate-500">{t.company}</span>
       </header>
 
       {/* Канбан бағандары */}
@@ -65,9 +66,7 @@ export default function Kitchen() {
           return (
             <section key={col.status} className="flex flex-col">
               <div className="mb-3 flex items-center justify-between px-1">
-                <h2 className="font-semibold text-slate-200">
-                  {kk.kitchen.columns[col.status]}
-                </h2>
+                <h2 className="font-semibold text-slate-200">{t.kitchen.columns[col.status]}</h2>
                 <span className="rounded-full bg-slate-700 px-2 py-0.5 text-xs text-slate-300">
                   {colOrders.length}
                 </span>
@@ -76,7 +75,7 @@ export default function Kitchen() {
               <div className="flex flex-1 flex-col gap-3">
                 {colOrders.length === 0 ? (
                   <p className="rounded-xl border border-dashed border-slate-700 px-4 py-8 text-center text-sm text-slate-600">
-                    {col.status === 'new' ? kk.kitchen.waiting : kk.kitchen.empty}
+                    {col.status === 'new' ? t.kitchen.waiting : t.kitchen.empty}
                   </p>
                 ) : (
                   colOrders.map((o) => (
@@ -84,7 +83,7 @@ export default function Kitchen() {
                       key={o.id}
                       order={o}
                       accent={col.accent}
-                      action={col.action}
+                      action={t.kitchen[col.actionKey]}
                       onAdvance={() => setOrderStatus(o.id, col.next)}
                     />
                   ))
@@ -99,8 +98,9 @@ export default function Kitchen() {
 }
 
 function OrderCard({ order, accent, action, onAdvance }) {
+  const t = useT()
   const mins = minutesSince(order.createdAt)
-  const timeLabel = mins === 0 ? kk.kitchen.justNow : `${mins} ${kk.kitchen.minutesAgo}`
+  const timeLabel = mins === 0 ? t.kitchen.justNow : `${mins} ${t.kitchen.minutesAgo}`
 
   return (
     <div className={`rounded-xl border-t-4 bg-slate-800 p-4 shadow ${ACCENTS[accent]}`}>
@@ -110,12 +110,12 @@ function OrderCard({ order, accent, action, onAdvance }) {
       </div>
 
       <div className="mt-1 flex items-center gap-2 text-xs text-slate-400">
-        <span className="rounded bg-slate-700 px-1.5 py-0.5">
-          {kk.order.source[order.source]}
-        </span>
-        <span>{kk.order.type[order.type]}</span>
+        <span className="rounded bg-slate-700 px-1.5 py-0.5">{t.order.source[order.source]}</span>
+        <span>{t.order.type[order.type]}</span>
         {order.table && order.table !== '—' && (
-          <span>· {kk.pos.table} {order.table}</span>
+          <span>
+            · {t.pos.table} {order.table}
+          </span>
         )}
       </div>
 

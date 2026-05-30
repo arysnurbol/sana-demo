@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import kk from '../../i18n/kk.js'
+import { useT } from '../../i18n'
 import useStore from '../../store/useStore.js'
 import { formatPrice } from '../../utils/format.js'
 import { computeStats } from '../../utils/stats.js'
@@ -45,6 +45,7 @@ function rawValue(v) {
 }
 
 export default function Analytics() {
+  const t = useT()
   const orders = useStore((s) => s.orders)
   const products = useStore((s) => s.products)
   const categories = useStore((s) => s.categories)
@@ -69,20 +70,20 @@ export default function Analytics() {
   if (orders.length === 0) {
     return (
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">{kk.analytics.title}</h1>
-        <p className="mt-6 text-slate-400">{kk.analytics.noData}</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t.analytics.title}</h1>
+        <p className="mt-6 text-slate-400">{t.analytics.noData}</p>
       </div>
     )
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">{kk.analytics.title}</h1>
+      <h1 className="text-2xl font-bold text-slate-900">{t.analytics.title}</h1>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         {/* Категория бойынша сатылым */}
         <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <h2 className="font-semibold text-slate-900">{kk.analytics.revenueByCategory}</h2>
+          <h2 className="font-semibold text-slate-900">{t.analytics.revenueByCategory}</h2>
           <div className="mt-4 space-y-3">
             {byCat.map((c) => (
               <Bar
@@ -98,21 +99,21 @@ export default function Analytics() {
 
         {/* Көзі бойынша */}
         <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <h2 className="font-semibold text-slate-900">{kk.analytics.ordersBySource}</h2>
+          <h2 className="font-semibold text-slate-900">{t.analytics.ordersBySource}</h2>
           <div className="mt-4 space-y-3">
-            <Bar label={kk.order.source.online} value={stats.online} max={maxSource} color="bg-violet-500" />
-            <Bar label={kk.order.source.pos} value={stats.offline} max={maxSource} color="bg-slate-700" />
+            <Bar label={t.order.source.online} value={stats.online} max={maxSource} color="bg-violet-500" />
+            <Bar label={t.order.source.pos} value={stats.offline} max={maxSource} color="bg-slate-700" />
           </div>
         </div>
 
         {/* Статус бойынша */}
         <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <h2 className="font-semibold text-slate-900">{kk.analytics.statusBreakdown}</h2>
+          <h2 className="font-semibold text-slate-900">{t.analytics.statusBreakdown}</h2>
           <div className="mt-4 space-y-3">
             {statusList.map((s) => (
               <Bar
                 key={s.key}
-                label={kk.order.status[s.key]}
+                label={t.order.status[s.key]}
                 value={stats.byStatus[s.key]}
                 max={maxStatus}
                 color={s.color}

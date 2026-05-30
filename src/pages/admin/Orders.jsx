@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import kk from '../../i18n/kk.js'
+import { useT } from '../../i18n'
 import useStore from '../../store/useStore.js'
 import { formatPrice, minutesSince } from '../../utils/format.js'
 import useCrossTabSync from '../../hooks/useCrossTabSync.js'
@@ -14,6 +14,7 @@ const STATUS_STYLES = {
 const FILTERS = ['all', 'pos', 'online']
 
 export default function Orders() {
+  const t = useT()
   const orders = useStore((s) => s.orders)
   useCrossTabSync() // POS/онлайн заказдар realtime түседі
 
@@ -23,7 +24,7 @@ export default function Orders() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">{kk.nav.orders}</h1>
+        <h1 className="text-2xl font-bold text-slate-900">{t.nav.orders}</h1>
         <div className="flex gap-1.5">
           {FILTERS.map((f) => (
             <button
@@ -35,7 +36,7 @@ export default function Orders() {
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              {f === 'all' ? 'Барлығы' : kk.order.source[f]}
+              {f === 'all' ? 'Барлығы' : t.order.source[f]}
             </button>
           ))}
         </div>
@@ -74,18 +75,18 @@ export default function Orders() {
                             : 'bg-slate-100 text-slate-600'
                         }`}
                       >
-                        {kk.order.source[o.source]}
+                        {t.order.source[o.source]}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-600">{kk.order.type[o.type]}</td>
+                    <td className="px-4 py-3 text-slate-600">{t.order.type[o.type]}</td>
                     <td className="px-4 py-3 font-medium text-slate-900">{formatPrice(o.total)}</td>
                     <td className="px-4 py-3">
                       <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[o.status]}`}>
-                        {kk.order.status[o.status]}
+                        {t.order.status[o.status]}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-slate-400">
-                      {mins === 0 ? kk.kitchen.justNow : `${mins} ${kk.kitchen.minutesAgo}`}
+                      {mins === 0 ? t.kitchen.justNow : `${mins} ${t.kitchen.minutesAgo}`}
                     </td>
                   </tr>
                 )
