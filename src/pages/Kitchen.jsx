@@ -4,6 +4,8 @@ import { useT } from '../i18n'
 import useStore from '../store/useStore.js'
 import { minutesSince } from '../utils/format.js'
 import useCrossTabSync from '../hooks/useCrossTabSync.js'
+import Icon from '../components/Icon.jsx'
+import EmptyState from '../components/EmptyState.jsx'
 
 // Канбан бағандары: статус → келесі статус + accent (мәтін i18n-нен).
 const COLUMNS = [
@@ -47,9 +49,9 @@ export default function Kitchen() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/demo')}
-            className="text-sm font-medium text-slate-400 hover:text-white"
+            className="flex items-center gap-1 text-sm font-medium text-slate-400 hover:text-white"
           >
-            ← {t.actions.back}
+            <Icon name="back" className="h-4 w-4" /> {t.actions.back}
           </button>
           <span className="rounded-md bg-amber-500/20 px-2 py-1 text-xs font-semibold text-amber-300">
             {t.demoMode}
@@ -59,7 +61,13 @@ export default function Kitchen() {
         <span className="text-sm text-slate-500">{t.company}</span>
       </header>
 
-      {/* Канбан бағандары */}
+      {/* Заказ мүлде жоқ болса — толық empty state */}
+      {orders.length === 0 ? (
+        <div className="flex flex-1 items-center justify-center">
+          <EmptyState dark title={t.emptyState.kitchenTitle} text={t.emptyState.kitchenText} />
+        </div>
+      ) : (
+      /* Канбан бағандары */
       <div className="grid flex-1 grid-cols-1 gap-4 overflow-y-auto p-4 md:grid-cols-3">
         {COLUMNS.map((col) => {
           const colOrders = orders.filter((o) => o.status === col.status)
@@ -93,6 +101,7 @@ export default function Kitchen() {
           )
         })}
       </div>
+      )}
     </div>
   )
 }

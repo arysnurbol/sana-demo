@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useT } from '../i18n'
 import Logo from '../components/Logo.jsx'
@@ -5,33 +6,99 @@ import Badge from '../components/Badge.jsx'
 import LangToggle from '../components/LangToggle.jsx'
 import Marquee from '../components/Marquee.jsx'
 import HeroMockup from '../components/HeroMockup.jsx'
+import useScrollSpy from '../hooks/useScrollSpy.js'
+
+const ANCHOR_IDS = ['problems', 'solution', 'flow']
 
 export default function Landing() {
   const t = useT()
   const L = t.landing
+  const active = useScrollSpy(ANCHOR_IDS)
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  const anchors = [
+    { id: 'problems', label: L.anchors.problems },
+    { id: 'solution', label: L.anchors.solution },
+    { id: 'flow', label: L.anchors.flow },
+  ]
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Nav */}
-      <header className="sticky top-0 z-30 border-b border-slate-100 bg-white/80 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-slate-100 bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Logo />
+
+          {/* Desktop anchor nav */}
+          <nav className="hidden items-center gap-1 md:flex">
+            {anchors.map((a) => (
+              <a
+                key={a.id}
+                href={`#${a.id}`}
+                className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                  active === a.id
+                    ? 'text-emerald-600'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                {a.label}
+              </a>
+            ))}
+          </nav>
+
           <div className="flex items-center gap-3">
-            <LangToggle />
+            <LangToggle className="hidden sm:inline-flex" />
             <Link
               to="/demo"
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+              className="hidden rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 sm:block"
             >
               {t.actions.viewDemo}
             </Link>
+            {/* Hamburger */}
+            <button
+              onClick={() => setMobileOpen((o) => !o)}
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 md:hidden"
+              aria-label="menu"
+            >
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                {mobileOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+              </svg>
+            </button>
           </div>
         </div>
+
+        {/* Mobile dropdown */}
+        {mobileOpen && (
+          <div className="border-t border-slate-100 bg-white px-6 py-4 md:hidden">
+            <nav className="flex flex-col gap-1">
+              {anchors.map((a) => (
+                <a
+                  key={a.id}
+                  href={`#${a.id}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                >
+                  {a.label}
+                </a>
+              ))}
+            </nav>
+            <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
+              <LangToggle />
+              <Link
+                to="/demo"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+              >
+                {t.actions.viewDemo}
+              </Link>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Hero — split: мәтін + product mockup */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:py-24">
-          {/* Сол жақ: мәтін */}
           <div>
             <Badge tone="emerald" dot>
               {L.badge}
@@ -67,7 +134,6 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Оң жақ: тірі product mockup */}
           <HeroMockup />
         </div>
       </section>
@@ -76,7 +142,7 @@ export default function Landing() {
       <Marquee />
 
       {/* Problems */}
-      <section className="py-20">
+      <section id="problems" className="py-20">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold">{L.problems.title}</h2>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -94,7 +160,7 @@ export default function Landing() {
       </section>
 
       {/* Solution / Modules */}
-      <section className="bg-slate-50 py-20">
+      <section id="solution" className="bg-slate-50 py-20">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center">
             <h2 className="text-3xl font-bold">{L.solution.title}</h2>
@@ -118,7 +184,7 @@ export default function Landing() {
       </section>
 
       {/* How demo works */}
-      <section className="bg-slate-900 py-20 text-white">
+      <section id="flow" className="bg-slate-900 py-20 text-white">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold">{L.flow.title}</h2>
           <div className="mt-12 flex flex-col items-stretch gap-4 md:flex-row md:items-center">
@@ -144,21 +210,24 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section id="contact" className="bg-slate-50 py-20">
+      {/* CTA + slogan */}
+      <section id="contact" className="bg-slate-900 py-20 text-white">
         <div className="mx-auto max-w-2xl px-6 text-center">
-          <h2 className="text-3xl font-bold">{L.cta.title}</h2>
-          <p className="mt-3 text-slate-600">{L.cta.subtitle}</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-emerald-400">
+            {L.slogan}
+          </p>
+          <h2 className="mt-3 text-3xl font-bold">{L.cta.title}</h2>
+          <p className="mt-3 text-slate-300">{L.cta.subtitle}</p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               to="/demo"
-              className="rounded-xl bg-slate-900 px-8 py-4 font-semibold text-white transition hover:bg-slate-700"
+              className="rounded-xl bg-emerald-500 px-8 py-4 font-semibold text-white transition hover:bg-emerald-600"
             >
               {t.actions.openDemo} →
             </Link>
             <a
               href="mailto:amit.nurbol@gmail.com"
-              className="rounded-xl border border-slate-300 px-8 py-4 font-semibold text-slate-700 transition hover:bg-white"
+              className="rounded-xl border border-slate-600 px-8 py-4 font-semibold text-slate-200 transition hover:bg-slate-800"
             >
               {t.actions.contact}
             </a>
@@ -167,12 +236,13 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-100 py-8">
+      <footer className="border-t border-slate-100 py-10">
         <div className="mx-auto max-w-6xl px-6 text-center text-sm text-slate-400">
           <div className="flex justify-center">
             <Logo />
           </div>
-          <p className="mt-3">{L.footer}</p>
+          <p className="mt-3 text-base font-semibold text-slate-700">{L.slogan}</p>
+          <p className="mt-2">{L.footer}</p>
           <p className="mt-3">© 2026 {t.brand}</p>
         </div>
       </footer>

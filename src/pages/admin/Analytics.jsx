@@ -4,6 +4,8 @@ import useStore from '../../store/useStore.js'
 import { formatPrice } from '../../utils/format.js'
 import { computeStats } from '../../utils/stats.js'
 import useCrossTabSync from '../../hooks/useCrossTabSync.js'
+import Icon from '../../components/Icon.jsx'
+import EmptyState from '../../components/EmptyState.jsx'
 
 // Категория бойынша сатылым (₸).
 function revenueByCategory(orders, products, categories) {
@@ -21,27 +23,36 @@ function revenueByCategory(orders, products, categories) {
     .sort((a, b) => b.value - a.value)
 }
 
-function Bar({ label, value, max, color }) {
+// Gradient прогресс-бар жолы.
+function BarRow({ label, display, ratio, gradient }) {
   return (
     <div>
       <div className="flex justify-between text-sm">
-        <span className="text-slate-700">{label}</span>
-        <span className="text-slate-500">{value}</span>
+        <span className="font-medium text-slate-700">{label}</span>
+        <span className="font-semibold text-slate-500">{display}</span>
       </div>
-      <div className="mt-1 h-2.5 rounded-full bg-slate-100">
+      <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-slate-100">
         <div
-          className={`h-2.5 rounded-full ${color}`}
-          style={{ width: `${max ? (rawValue(value) / max) * 100 : 0}%` }}
+          className={`h-full rounded-full bg-gradient-to-r ${gradient}`}
+          style={{ width: `${Math.max(4, ratio * 100)}%` }}
         />
       </div>
     </div>
   )
 }
 
-// "1 200 ₸" немесе санды бірдей өңдеу үшін
-function rawValue(v) {
-  if (typeof v === 'number') return v
-  return Number(String(v).replace(/[^\d]/g, '')) || 0
+function Card({ title, icon, tint, children }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+      <div className="mb-4 flex items-center gap-2.5">
+        <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${tint}`}>
+          <Icon name={icon} className="h-[18px] w-[18px]" />
+        </span>
+        <h2 className="font-bold text-slate-900">{title}</h2>
+      </div>
+      {children}
+    </div>
+  )
 }
 
 export default function Analytics() {
@@ -60,68 +71,105 @@ export default function Analytics() {
   const maxCat = Math.max(1, ...byCat.map((c) => c.value))
   const maxSource = Math.max(1, stats.online, stats.offline)
   const statusList = [
-    { key: 'new', color: 'bg-sky-400' },
-    { key: 'cooking', color: 'bg-amber-400' },
-    { key: 'ready', color: 'bg-emerald-400' },
-    { key: 'done', color: 'bg-slate-400' },
+    { key: 'new', gradient: 'from-sky-400 to-sky-500' },
+    { key: 'cooking', gradient: 'from-amber-400 to-amber-500' },
+    { key: 'ready', gradient: 'from-emerald-400 to-emerald-500' },
+    { key: 'done', gradient: 'from-slate-400 to-slate-500' },
   ]
   const maxStatus = Math.max(1, ...Object.values(stats.byStatus))
 
-  if (orders.length === 0) {
-    return (
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">{t.analytics.title}</h1>
-        <p className="mt-6 text-slate-400">{t.analytics.noData}</p>
-      </div>
-    )
-  }
-
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">{t.analytics.title}</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">{t.analytics.title}</h1>
+      <p className="mt-1 text-sm text-slate-500">{t.company}</p>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        {/* Категория бойынша сатылым */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <h2 className="font-semibold text-slate-900">{t.analytics.revenueByCategory}</h2>
-          <div className="mt-4 space-y-3">
-            {byCat.map((c) => (
-              <Bar
-                key={c.name}
-                label={c.name}
-                value={formatPrice(c.value)}
-                max={maxCat}
-                color="bg-slate-900"
+      {orders.length === 0 ? (
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
+          <EmptyState title={t.emptyState.dashboardTitle} text={t.analytics.noData} />
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          {/* Категория бойынша сатылым */}
+          <Card
+            title={t.analytics.revenueByCategory}
+            icon="analytics"
+            tint="bg-emerald-50 text-emerald-600"
+          >
+            <div className="space-y-3.5">
+              {byCat.map((c) => (
+                <BarRow
+                  key={c.name}
+                  label={c.name}
+                  display={formatPrice(c.value)}
+                  ratio={c.value / maxCat}
+                  gradient="from-emerald-500 to-teal-600"
+                />
+              ))}
+            </div>
+          </Card>
+
+          {/* Көзі бойынша */}
+          <Card
+            title={t.analytics.ordersBySource}
+            icon="orders"
+            tint="bg-violet-50 text-violet-600"
+          >
+            <div className="space-y-3.5">
+              <BarRow
+                label={t.order.source.online}
+                display={stats.online}
+                ratio={stats.online / maxSource}
+                gradient="from-violet-500 to-purple-600"
               />
-            ))}
-          </div>
-        </div>
-
-        {/* Көзі бойынша */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <h2 className="font-semibold text-slate-900">{t.analytics.ordersBySource}</h2>
-          <div className="mt-4 space-y-3">
-            <Bar label={t.order.source.online} value={stats.online} max={maxSource} color="bg-violet-500" />
-            <Bar label={t.order.source.pos} value={stats.offline} max={maxSource} color="bg-slate-700" />
-          </div>
-        </div>
-
-        {/* Статус бойынша */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <h2 className="font-semibold text-slate-900">{t.analytics.statusBreakdown}</h2>
-          <div className="mt-4 space-y-3">
-            {statusList.map((s) => (
-              <Bar
-                key={s.key}
-                label={t.order.status[s.key]}
-                value={stats.byStatus[s.key]}
-                max={maxStatus}
-                color={s.color}
+              <BarRow
+                label={t.order.source.pos}
+                display={stats.offline}
+                ratio={stats.offline / maxSource}
+                gradient="from-slate-600 to-slate-800"
               />
-            ))}
-          </div>
+            </div>
+          </Card>
+
+          {/* Статус бойынша */}
+          <Card
+            title={t.analytics.statusBreakdown}
+            icon="kitchen"
+            tint="bg-amber-50 text-amber-600"
+          >
+            <div className="space-y-3.5">
+              {statusList.map((s) => (
+                <BarRow
+                  key={s.key}
+                  label={t.order.status[s.key]}
+                  display={stats.byStatus[s.key]}
+                  ratio={stats.byStatus[s.key] / maxStatus}
+                  gradient={s.gradient}
+                />
+              ))}
+            </div>
+          </Card>
+
+          {/* Қорытынды KPI */}
+          <Card title={t.dashboard.revenue} icon="revenue" tint="bg-sky-50 text-sky-600">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-xl bg-slate-50 p-4">
+                <p className="text-xs font-medium text-slate-500">{t.dashboard.ordersCount}</p>
+                <p className="mt-1 text-2xl font-extrabold text-slate-900">{stats.ordersCount}</p>
+              </div>
+              <div className="rounded-xl bg-slate-50 p-4">
+                <p className="text-xs font-medium text-slate-500">{t.dashboard.avgCheck}</p>
+                <p className="mt-1 text-2xl font-extrabold text-slate-900">
+                  {formatPrice(stats.avgCheck)}
+                </p>
+              </div>
+              <div className="col-span-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 p-4 text-white">
+                <p className="text-xs font-medium text-emerald-50">{t.dashboard.revenue}</p>
+                <p className="mt-1 text-3xl font-extrabold">{formatPrice(stats.revenue)}</p>
+              </div>
+            </div>
+          </Card>
         </div>
-      </div>
+      )}
     </div>
   )
 }

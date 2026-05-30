@@ -6,6 +6,15 @@
   text-rendering: optimizeLegibility;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Anchor секцияға өткенде sticky nav астында қалмауы үшін */
+section[id] {
+  scroll-margin-top: 80px;
+}
+
 /* Жылжымалы сегмент лентасы (marquee) */
 @keyframes marquee {
   from {
