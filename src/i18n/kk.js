@@ -33,6 +33,22 @@ export const kk = {
     back: 'Артқа',
   },
 
+  kitchen: {
+    title: 'Кухня / Бариста',
+    columns: {
+      new: 'Жаңа',
+      cooking: 'Дайындалуда',
+      ready: 'Дайын',
+    },
+    empty: 'Заказ жоқ',
+    startCooking: 'Дайындауды бастау',
+    markReady: 'Дайын',
+    complete: 'Берілді',
+    waiting: 'POS немесе онлайн заказды күтуде…',
+    minutesAgo: 'мин бұрын',
+    justNow: 'жаңа ғана',
+  },
+
   pos: {
     title: 'POS / Кассир',
     cart: 'Себет',
