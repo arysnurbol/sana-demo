@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(findstr /n /c:\"Aroma\" claude.md)",
-      "Bash(npm run *)",
-      "Bash(echo \"EXIT=$?\")"
-    ]
-  }
-}
