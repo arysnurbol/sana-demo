@@ -13,6 +13,7 @@ export default function Pos() {
   const categories = useStore((s) => s.categories)
   const products = useStore((s) => s.products)
   const addOrder = useStore((s) => s.addOrder)
+  const company = useStore((s) => s.company)
 
   const sortedCategories = useMemo(
     () => [...categories].sort((a, b) => a.order - b.order),

@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom'
 import { useT } from '../i18n'
+import useStore from '../store/useStore.js'
 import Logo from '../components/Logo.jsx'
 import Badge from '../components/Badge.jsx'
 import LangToggle from '../components/LangToggle.jsx'
+import BusinessToggle from '../components/BusinessToggle.jsx'
 
 export default function DemoHome() {
   const t = useT()
+  const company = useStore((s) => s.company)
 
   const roleCards = [
     { to: '/demo/pos', title: t.roles.pos, desc: t.demoHome.cards.pos },
@@ -23,6 +26,7 @@ export default function DemoHome() {
             <Logo />
           </Link>
           <div className="flex items-center gap-3">
+            <BusinessToggle />
             <LangToggle />
             <Link
               to="/"
@@ -36,7 +40,7 @@ export default function DemoHome() {
 
       <div className="mx-auto max-w-4xl px-6 py-16">
         <Badge tone="amber" dot>
-          {t.demoMode} · {t.company}
+          {t.demoMode} · {company}
         </Badge>
         <h1 className="mt-4 text-3xl font-bold text-slate-900">{t.demoHome.title}</h1>
         <p className="mt-2 text-slate-600">{t.demoHome.subtitle}</p>

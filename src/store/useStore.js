@@ -3,27 +3,54 @@ import { persist } from 'zustand/middleware'
 
 // 1-этап: Firebase-сіз. State localStorage-та сақталады (persist).
 // POS пен Kitchen бөлек табтарда ашылғанда, олар бір localStorage-ты
-// бөліседі — табтар арасындағы realtime синхрон келесі қадамда
-// (storage event / BroadcastChannel) қосылады.
+// бөліседі — табтар арасындағы realtime синхрон storage event арқылы.
 
-const seedCategories = [
-  { id: 'c1', name: 'Кофе', order: 1 },
-  { id: 'c2', name: 'Выпечка', order: 2 },
-  { id: 'c3', name: 'Сусын', order: 3 },
-]
+// ====== Бизнес түрлері ======
+// Демо екі бизнеске арналған: кофехана (coffee) және наубайхана (bakery).
+// Әр түрдің өз seed-і (категория, өнім, компания аты, лоялдылық сыйлығы).
 
-// cost — себестоимость (материал шығыны). Маржа = price - cost.
-const seedProducts = [
-  { id: 'p1', categoryId: 'c1', name: 'Латте', price: 1200, cost: 360, available: true },
-  { id: 'p2', categoryId: 'c1', name: 'Капучино', price: 1200, cost: 340, available: true },
-  { id: 'p3', categoryId: 'c1', name: 'Американо', price: 900, cost: 200, available: true },
-  { id: 'p4', categoryId: 'c2', name: 'Круассан', price: 800, cost: 320, available: true },
-  { id: 'p5', categoryId: 'c2', name: 'Чизкейк', price: 1500, cost: 600, available: true },
-  { id: 'p6', categoryId: 'c3', name: 'Су', price: 300, cost: 120, available: true },
-]
+const SEEDS = {
+  coffee: {
+    company: 'Sana Coffee',
+    categories: [
+      { id: 'c1', name: 'Кофе', order: 1 },
+      { id: 'c2', name: 'Выпечка', order: 2 },
+      { id: 'c3', name: 'Сусын', order: 3 },
+    ],
+    products: [
+      { id: 'p1', categoryId: 'c1', name: 'Латте', price: 1200, cost: 360, available: true },
+      { id: 'p2', categoryId: 'c1', name: 'Капучино', price: 1200, cost: 340, available: true },
+      { id: 'p3', categoryId: 'c1', name: 'Американо', price: 900, cost: 200, available: true },
+      { id: 'p4', categoryId: 'c2', name: 'Круассан', price: 800, cost: 320, available: true },
+      { id: 'p5', categoryId: 'c2', name: 'Чизкейк', price: 1500, cost: 600, available: true },
+      { id: 'p6', categoryId: 'c3', name: 'Су', price: 300, cost: 120, available: true },
+    ],
+    loyalty: { stampsTarget: 6, reward: 'Тегін кофе' },
+  },
 
-// stamps — ағымдағы жинаған штамп (6 болғанда тегін кофе).
-// freeEarned — осы уақытқа дейін алған тегін кофе саны.
+  bakery: {
+    company: 'Sana Bakery',
+    categories: [
+      { id: 'b1', name: 'Нан', order: 1 },
+      { id: 'b2', name: 'Тоқаш', order: 2 },
+      { id: 'b3', name: 'Торт', order: 3 },
+    ],
+    products: [
+      { id: 'q1', categoryId: 'b1', name: 'Бөлке нан', price: 250, cost: 80, available: true },
+      { id: 'q2', categoryId: 'b1', name: 'Қара нан', price: 300, cost: 100, available: true },
+      { id: 'q3', categoryId: 'b1', name: 'Багет', price: 400, cost: 130, available: true },
+      { id: 'q4', categoryId: 'b2', name: 'Самса', price: 350, cost: 140, available: true },
+      { id: 'q5', categoryId: 'b2', name: 'Бауырсақ (порц.)', price: 500, cost: 150, available: true },
+      { id: 'q6', categoryId: 'b2', name: 'Пирожок', price: 250, cost: 90, available: true },
+      { id: 'q7', categoryId: 'b3', name: 'Наполеон (кесек)', price: 700, cost: 280, available: true },
+      { id: 'q8', categoryId: 'b3', name: 'Медовик (кесек)', price: 700, cost: 280, available: true },
+      { id: 'q9', categoryId: 'b3', name: 'Эклер', price: 400, cost: 150, available: true },
+    ],
+    loyalty: { stampsTarget: 8, reward: 'Тегін нан' },
+  },
+}
+
+// stamps — жинаған штамп. freeEarned — алған сыйлық саны.
 const seedCustomers = [
   { id: 'u1', name: 'Айдос', phone: '+7 700 000 00 01', ordersCount: 12, totalSpent: 32400, stamps: 4, freeEarned: 2 },
   { id: 'u2', name: 'Мадина', phone: '+7 701 000 00 02', ordersCount: 8, totalSpent: 21700, stamps: 1, freeEarned: 1 },
@@ -32,25 +59,35 @@ const seedCustomers = [
   { id: 'u5', name: 'Дамир', phone: '+7 708 000 00 05', ordersCount: 6, totalSpent: 14600, stamps: 2, freeEarned: 1 },
 ]
 
-// Лоялдылық бағдарламасының параметрлері.
-const seedLoyalty = {
-  stampsTarget: 6, // неше штамп = 1 тегін кофе
-  reward: 'Тегін кофе',
+// Берілген бизнес түрінің бастапқы state-ін құрады.
+function buildState(businessType) {
+  const seed = SEEDS[businessType] || SEEDS.coffee
+  return {
+    businessType,
+    company: seed.company,
+    categories: seed.categories,
+    products: seed.products,
+    customers: seedCustomers,
+    loyalty: seed.loyalty,
+    orders: [],
+    orderCounter: 101,
+  }
 }
 
-const initialState = {
-  categories: seedCategories,
-  products: seedProducts,
-  customers: seedCustomers,
-  loyalty: seedLoyalty,
-  orders: [],
-  orderCounter: 101,
-}
+const initialState = buildState('coffee')
 
 export const useStore = create(
   persist(
     (set, get) => ({
       ...initialState,
+
+      // Бизнес түрін ауыстыру. Өнімдер мен заказдар үйлеспейтіндіктен
+      // (кофехана заказында "Латте", наубайханада ол жоқ), seed толық
+      // алмасады әрі заказдар тазаланады.
+      setBusinessType: (businessType) => {
+        if (get().businessType === businessType) return
+        set(buildState(businessType))
+      },
 
       // Жаңа заказ қосу. POS пен Online menu осыны шақырады.
       addOrder: (order) => {
@@ -79,7 +116,7 @@ export const useStore = create(
         })),
 
       // Лоялдылық: клиентке штамп беру. Мақсатқа жеткенде —
-      // штамп нөлденіп, тегін кофе (freeEarned) есепке қосылады.
+      // штамп нөлденіп, сыйлық (freeEarned) есепке қосылады.
       addStamp: (customerId) =>
         set((s) => {
           const target = s.loyalty?.stampsTarget || 6
@@ -95,10 +132,20 @@ export const useStore = create(
           }
         }),
 
-      // Демоны бастапқы күйге қайтару.
-      resetDemo: () => set({ ...initialState }),
+      // Демоны бастапқы күйге қайтару (ағымдағы бизнес түрімен).
+      resetDemo: () => set(buildState(get().businessType || 'coffee')),
     }),
-    { name: 'sana-demo-store' },
+    {
+      name: 'sana-demo-store',
+      version: 2,
+      // Ескі (businessType жоқ) persist деректерін жаңартады.
+      migrate: (persisted) => {
+        if (persisted && !persisted.businessType) {
+          return { ...persisted, businessType: 'coffee', company: 'Sana Coffee' }
+        }
+        return persisted
+      },
+    },
   ),
 )
 

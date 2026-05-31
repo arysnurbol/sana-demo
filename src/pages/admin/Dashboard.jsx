@@ -34,6 +34,7 @@ export default function Dashboard() {
   const orders = useStore((s) => s.orders)
   const customers = useStore((s) => s.customers)
   const products = useStore((s) => s.products)
+  const company = useStore((s) => s.company)
   useCrossTabSync() // жаңа заказдар realtime есепке кіреді
 
   const stats = useMemo(
@@ -46,7 +47,7 @@ export default function Dashboard() {
   return (
     <div>
       <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">{t.nav.dashboard}</h1>
-      <p className="mt-1 text-sm text-slate-500">{t.company}</p>
+      <p className="mt-1 text-sm text-slate-500">{company}</p>
 
       {/* Stat карталары */}
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-3">

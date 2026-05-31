@@ -11,6 +11,7 @@ export default function OnlineMenu() {
   const categories = useStore((s) => s.categories)
   const products = useStore((s) => s.products)
   const addOrder = useStore((s) => s.addOrder)
+  const company = useStore((s) => s.company)
 
   const sortedCategories = useMemo(
     () => [...categories].sort((a, b) => a.order - b.order),
@@ -74,7 +75,7 @@ export default function OnlineMenu() {
           >
             ← {t.actions.back}
           </button>
-          <span className="text-xs font-semibold text-emerald-600">{t.company}</span>
+          <span className="text-xs font-semibold text-emerald-600">{company}</span>
         </div>
         <h1 className="mt-2 text-2xl font-bold text-slate-900">{t.menu.title}</h1>
         {view === 'menu' && <p className="text-sm text-slate-500">{t.menu.subtitle}</p>}

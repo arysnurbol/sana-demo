@@ -60,6 +60,7 @@ export default function Analytics() {
   const orders = useStore((s) => s.orders)
   const products = useStore((s) => s.products)
   const categories = useStore((s) => s.categories)
+  const company = useStore((s) => s.company)
   useCrossTabSync()
 
   const stats = useMemo(() => computeStats(orders), [orders])
@@ -81,7 +82,7 @@ export default function Analytics() {
   return (
     <div>
       <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">{t.analytics.title}</h1>
-      <p className="mt-1 text-sm text-slate-500">{t.company}</p>
+      <p className="mt-1 text-sm text-slate-500">{company}</p>
 
       {orders.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white">

@@ -31,6 +31,7 @@ export default function Kitchen() {
   const navigate = useNavigate()
   const orders = useStore((s) => s.orders)
   const setOrderStatus = useStore((s) => s.setOrderStatus)
+  const company = useStore((s) => s.company)
 
   // Бөлек табтан (POS) келген заказдарды realtime көру.
   useCrossTabSync()

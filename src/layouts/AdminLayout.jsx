@@ -5,12 +5,14 @@ import Logo from '../components/Logo.jsx'
 import Icon from '../components/Icon.jsx'
 import Badge from '../components/Badge.jsx'
 import LangToggle from '../components/LangToggle.jsx'
+import BusinessToggle from '../components/BusinessToggle.jsx'
 import useStore from '../store/useStore.js'
 
 export default function AdminLayout() {
   const t = useT()
   const navigate = useNavigate()
   const resetDemo = useStore((s) => s.resetDemo)
+  const company = useStore((s) => s.company)
   const [collapsed, setCollapsed] = useState(false) // desktop: жинау
   const [mobileOpen, setMobileOpen] = useState(false) // mobile: drawer
 
@@ -145,10 +147,11 @@ export default function AdminLayout() {
             <Badge tone="amber" dot>
               {t.demoMode}
             </Badge>
-            <span className="hidden truncate font-medium text-slate-700 sm:inline">{t.company}</span>
+            <span className="hidden truncate font-medium text-slate-700 sm:inline">{company}</span>
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
+            <BusinessToggle className="hidden md:inline-flex" />
             <LangToggle className="hidden sm:inline-flex" />
             <button
               onClick={() => navigate('/demo')}
