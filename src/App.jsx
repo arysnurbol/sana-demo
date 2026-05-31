@@ -9,7 +9,9 @@ import Dashboard from './pages/admin/Dashboard.jsx'
 import Orders from './pages/admin/Orders.jsx'
 import MenuManage from './pages/admin/MenuManage.jsx'
 import Customers from './pages/admin/Customers.jsx'
+import Loyalty from './pages/admin/Loyalty.jsx'
 import Analytics from './pages/admin/Analytics.jsx'
+import Shift from './pages/admin/Shift.jsx'
 import NotFound from './pages/NotFound.jsx'
 
 export default function App() {
@@ -30,7 +32,9 @@ export default function App() {
         <Route path="orders" element={<Orders />} />
         <Route path="menu" element={<MenuManage />} />
         <Route path="customers" element={<Customers />} />
+        <Route path="loyalty" element={<Loyalty />} />
         <Route path="analytics" element={<Analytics />} />
+        <Route path="shift" element={<Shift />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

@@ -22,7 +22,9 @@ export default function AdminLayout() {
         { to: '/demo/admin/orders', label: t.nav.orders, icon: 'orders' },
         { to: '/demo/admin/menu', label: t.nav.menu, icon: 'menu' },
         { to: '/demo/admin/customers', label: t.nav.customers, icon: 'customers' },
+        { to: '/demo/admin/loyalty', label: t.nav.loyalty, icon: 'loyalty' },
         { to: '/demo/admin/analytics', label: t.nav.analytics, icon: 'analytics' },
+        { to: '/demo/admin/shift', label: t.nav.shift, icon: 'shift' },
       ],
     },
     {

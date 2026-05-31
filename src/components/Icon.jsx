@@ -98,6 +98,19 @@ const PATHS = {
       <path d="M5 12l4.5 4.5L19 7" />
     </>
   ),
+  loyalty: (
+    <>
+      <rect x="3" y="8" width="18" height="13" rx="2" />
+      <path d="M3 12h18" />
+      <path d="M12 8V5M12 5c-1-2-4-2-4 0 0 1.5 4 0 4 0Zm0 0c1-2 4-2 4 0 0 1.5-4 0-4 0Z" />
+    </>
+  ),
+  shift: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
 }
 
 export default function Icon({ name, className = 'h-5 w-5', strokeWidth = 1.8 }) {

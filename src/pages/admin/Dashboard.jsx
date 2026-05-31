@@ -33,9 +33,13 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const orders = useStore((s) => s.orders)
   const customers = useStore((s) => s.customers)
+  const products = useStore((s) => s.products)
   useCrossTabSync() // жаңа заказдар realtime есепке кіреді
 
-  const stats = useMemo(() => computeStats(orders, customers), [orders, customers])
+  const stats = useMemo(
+    () => computeStats(orders, customers, products),
+    [orders, customers, products],
+  )
   const recent = orders.slice(0, 5)
   const maxTop = stats.topProducts[0]?.qty || 1
 
@@ -84,6 +88,57 @@ export default function Dashboard() {
           tint="bg-rose-50 text-rose-600"
         />
       </div>
+
+      {/* Пайда мен маржа — кофехана иесінің басты метрикасы */}
+      {orders.length > 0 && (
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          {/* Таза пайда — көрнекті gradient карта */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 p-5 text-white">
+            <div className="flex items-start justify-between">
+              <p className="text-sm font-medium text-emerald-50">{t.dashboard.profit}</p>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15">
+                <Icon name="revenue" className="h-[18px] w-[18px]" />
+              </span>
+            </div>
+            <p className="mt-2 text-3xl font-extrabold">{formatPrice(stats.profit)}</p>
+            <p className="mt-1 text-xs text-emerald-50/80">{t.dashboard.profitHint}</p>
+          </div>
+
+          {/* Маржа % */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-5">
+            <div className="flex items-start justify-between">
+              <p className="text-sm font-medium text-slate-500">{t.dashboard.margin}</p>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                <Icon name="analytics" className="h-[18px] w-[18px]" />
+              </span>
+            </div>
+            <p className="mt-2 text-3xl font-extrabold text-slate-900">{stats.marginPct}%</p>
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-600"
+                style={{ width: `${stats.marginPct}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Материал шығыны */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-5">
+            <div className="flex items-start justify-between">
+              <p className="text-sm font-medium text-slate-500">{t.dashboard.materialCost}</p>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-500">
+                <Icon name="cart" className="h-[18px] w-[18px]" />
+              </span>
+            </div>
+            <p className="mt-2 text-3xl font-extrabold text-slate-900">
+              {formatPrice(stats.materialCost)}
+            </p>
+            <p className="mt-1 text-xs text-slate-400">
+              {stats.revenue ? Math.round((stats.materialCost / stats.revenue) * 100) : 0}% ·{' '}
+              {t.dashboard.revenue.toLowerCase()}
+            </p>
+          </div>
+        </div>
+      )}
 
       {orders.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
