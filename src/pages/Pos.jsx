@@ -185,7 +185,7 @@ export default function Pos() {
           </span>
           <span className="truncate font-semibold text-slate-800">{t.pos.title}</span>
         </div>
-        <span className="hidden shrink-0 text-sm text-slate-400 sm:inline">{t.company}</span>
+        <span className="hidden shrink-0 text-sm text-slate-400 sm:inline">{company}</span>
       </header>
 
       <div className="flex flex-1 overflow-hidden">

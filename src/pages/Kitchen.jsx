@@ -59,7 +59,7 @@ export default function Kitchen() {
           </span>
           <span className="font-semibold">{t.kitchen.title}</span>
         </div>
-        <span className="text-sm text-slate-500">{t.company}</span>
+        <span className="text-sm text-slate-500">{company}</span>
       </header>
 
       {/* Заказ мүлде жоқ болса — толық empty state */}
