@@ -145,6 +145,7 @@
     "qty": "кол-во",
     "notAvailable": "Нет",
     "orderCreated": "Заказ создан",
+    "viewCart": "Смотреть корзину",
     "paymentMethods": { "kaspi": "Kaspi", "cash": "Наличные", "card": "Карта" }
   },
   "menu": {

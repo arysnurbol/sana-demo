@@ -25,9 +25,11 @@ export default function Pos() {
   const [table, setTable] = useState('')
   const [payment, setPayment] = useState('kaspi')
   const [confirmation, setConfirmation] = useState(null)
+  const [cartOpen, setCartOpen] = useState(false) // мобайл bottom sheet
 
   const visibleProducts = products.filter((p) => p.categoryId === activeCat)
   const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0)
+  const count = cart.reduce((sum, i) => sum + i.qty, 0)
 
   function addToCart(product) {
     if (!product.available) return
@@ -65,32 +67,131 @@ export default function Pos() {
     setConfirmation(order)
     setCart([])
     setTable('')
+    setCartOpen(false)
   }
+
+  // Себет тізімі (десктоп aside пен мобайл sheet екеуінде ортақ).
+  const cartList = (
+    <div className="flex-1 overflow-y-auto px-5 py-3">
+      {cart.length === 0 ? (
+        <p className="mt-6 text-center text-sm text-slate-400">{t.pos.emptyCart}</p>
+      ) : (
+        <ul className="space-y-3">
+          {cart.map((i) => (
+            <li key={i.id} className="flex items-center justify-between">
+              <div className="min-w-0">
+                <p className="truncate font-medium text-slate-800">{i.name}</p>
+                <p className="text-xs text-slate-500">{formatPrice(i.price)}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => changeQty(i.id, -1)}
+                  className="h-8 w-8 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200"
+                >
+                  −
+                </button>
+                <span className="w-5 text-center text-sm font-medium">{i.qty}</span>
+                <button
+                  onClick={() => changeQty(i.id, 1)}
+                  className="h-8 w-8 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200"
+                >
+                  +
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+
+  // Заказ параметрлері + жасау (ортақ).
+  const cartParams = (
+    <div className="border-t border-slate-200 px-5 py-4">
+      <label className="text-xs font-medium text-slate-500">{t.pos.orderType}</label>
+      <div className="mt-1 flex gap-1.5">
+        {ORDER_TYPES.map((ty) => (
+          <button
+            key={ty}
+            onClick={() => setOrderType(ty)}
+            className={`flex-1 rounded-lg px-2 py-2 text-xs font-medium transition ${
+              orderType === ty
+                ? 'bg-slate-900 text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            {t.order.type[ty]}
+          </button>
+        ))}
+      </div>
+
+      {orderType === 'dine_in' && (
+        <div className="mt-3">
+          <label className="text-xs font-medium text-slate-500">{t.pos.table}</label>
+          <input
+            value={table}
+            onChange={(e) => setTable(e.target.value)}
+            placeholder={t.pos.tablePlaceholder}
+            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none"
+          />
+        </div>
+      )}
+
+      <label className="mt-3 block text-xs font-medium text-slate-500">{t.pos.payment}</label>
+      <div className="mt-1 flex gap-1.5">
+        {PAYMENTS.map((p) => (
+          <button
+            key={p}
+            onClick={() => setPayment(p)}
+            className={`flex-1 rounded-lg px-2 py-2 text-xs font-medium transition ${
+              payment === p
+                ? 'bg-slate-900 text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            {t.pos.paymentMethods[p]}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4 flex items-center justify-between">
+        <span className="text-sm text-slate-500">{t.pos.total}</span>
+        <span className="text-lg font-bold text-slate-900">{formatPrice(total)}</span>
+      </div>
+      <button
+        onClick={createOrder}
+        disabled={cart.length === 0}
+        className="mt-3 w-full rounded-xl bg-slate-900 py-3 font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+      >
+        {t.actions.createOrder}
+      </button>
+    </div>
+  )
 
   return (
     <div className="flex h-screen flex-col bg-slate-50">
       {/* Topbar */}
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-3">
-        <div className="flex items-center gap-3">
+      <header className="flex items-center justify-between gap-2 border-b border-slate-200 bg-white px-4 py-3 sm:px-5">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <button
             onClick={() => navigate('/demo')}
-            className="text-sm font-medium text-slate-500 hover:text-slate-900"
+            className="shrink-0 text-sm font-medium text-slate-500 hover:text-slate-900"
           >
             ← {t.actions.back}
           </button>
-          <span className="rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
+          <span className="shrink-0 rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
             {t.demoMode}
           </span>
-          <span className="font-semibold text-slate-800">{t.pos.title}</span>
+          <span className="truncate font-semibold text-slate-800">{t.pos.title}</span>
         </div>
-        <span className="text-sm text-slate-400">{t.company}</span>
+        <span className="hidden shrink-0 text-sm text-slate-400 sm:inline">{t.company}</span>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
         {/* Сол жақ: категориялар + өнімдер */}
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Категория табтары */}
-          <div className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-5 py-3">
+          <div className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-3 sm:px-5">
             {sortedCategories.map((c) => (
               <button
                 key={c.id}
@@ -106,8 +207,8 @@ export default function Pos() {
             ))}
           </div>
 
-          {/* Өнім торы */}
-          <div className="grid flex-1 auto-rows-min grid-cols-2 gap-3 overflow-y-auto p-5 sm:grid-cols-3 lg:grid-cols-4">
+          {/* Өнім торы (мобайлда төменгі бар үшін pb қосылған) */}
+          <div className="grid flex-1 auto-rows-min grid-cols-2 gap-3 overflow-y-auto p-4 pb-24 sm:grid-cols-3 sm:p-5 lg:grid-cols-4 lg:pb-5">
             {visibleProducts.map((p) => (
               <button
                 key={p.id}
@@ -131,8 +232,8 @@ export default function Pos() {
           </div>
         </div>
 
-        {/* Оң жақ: себет */}
-        <aside className="flex w-80 shrink-0 flex-col border-l border-slate-200 bg-white">
+        {/* Оң жақ: себет — десктопта ғана көрінетін бағана */}
+        <aside className="hidden w-80 shrink-0 flex-col border-l border-slate-200 bg-white lg:flex">
           <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">
             <h2 className="font-semibold text-slate-900">{t.pos.cart}</h2>
             {cart.length > 0 && (
@@ -144,108 +245,59 @@ export default function Pos() {
               </button>
             )}
           </div>
-
-          {/* Себет тізімі */}
-          <div className="flex-1 overflow-y-auto px-5 py-3">
-            {cart.length === 0 ? (
-              <p className="mt-6 text-center text-sm text-slate-400">{t.pos.emptyCart}</p>
-            ) : (
-              <ul className="space-y-3">
-                {cart.map((i) => (
-                  <li key={i.id} className="flex items-center justify-between">
-                    <div className="min-w-0">
-                      <p className="truncate font-medium text-slate-800">{i.name}</p>
-                      <p className="text-xs text-slate-500">{formatPrice(i.price)}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => changeQty(i.id, -1)}
-                        className="h-7 w-7 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      >
-                        −
-                      </button>
-                      <span className="w-5 text-center text-sm font-medium">{i.qty}</span>
-                      <button
-                        onClick={() => changeQty(i.id, 1)}
-                        className="h-7 w-7 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          {/* Заказ параметрлері */}
-          <div className="border-t border-slate-200 px-5 py-4">
-            {/* Заказ түрі */}
-            <label className="text-xs font-medium text-slate-500">{t.pos.orderType}</label>
-            <div className="mt-1 flex gap-1.5">
-              {ORDER_TYPES.map((ty) => (
-                <button
-                  key={ty}
-                  onClick={() => setOrderType(ty)}
-                  className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium transition ${
-                    orderType === ty
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {t.order.type[ty]}
-                </button>
-              ))}
-            </div>
-
-            {/* Стол (тек залда ішу) */}
-            {orderType === 'dine_in' && (
-              <div className="mt-3">
-                <label className="text-xs font-medium text-slate-500">{t.pos.table}</label>
-                <input
-                  value={table}
-                  onChange={(e) => setTable(e.target.value)}
-                  placeholder={t.pos.tablePlaceholder}
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:border-slate-900 focus:outline-none"
-                />
-              </div>
-            )}
-
-            {/* Төлем */}
-            <label className="mt-3 block text-xs font-medium text-slate-500">
-              {t.pos.payment}
-            </label>
-            <div className="mt-1 flex gap-1.5">
-              {PAYMENTS.map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setPayment(p)}
-                  className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium transition ${
-                    payment === p
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {t.pos.paymentMethods[p]}
-                </button>
-              ))}
-            </div>
-
-            {/* Итог + заказ жасау */}
-            <div className="mt-4 flex items-center justify-between">
-              <span className="text-sm text-slate-500">{t.pos.total}</span>
-              <span className="text-lg font-bold text-slate-900">{formatPrice(total)}</span>
-            </div>
-            <button
-              onClick={createOrder}
-              disabled={cart.length === 0}
-              className="mt-3 w-full rounded-xl bg-slate-900 py-3 font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-300"
-            >
-              {t.actions.createOrder}
-            </button>
-          </div>
+          {cartList}
+          {cartParams}
         </aside>
       </div>
+
+      {/* Мобайл: төменгі «себетті көру» бары */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white p-3 lg:hidden">
+        <button
+          onClick={() => setCartOpen(true)}
+          className="flex w-full items-center justify-between rounded-xl bg-slate-900 px-5 py-3.5 font-semibold text-white"
+        >
+          <span className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs">
+              {count}
+            </span>
+            {t.pos.viewCart}
+          </span>
+          <span>{formatPrice(total)}</span>
+        </button>
+      </div>
+
+      {/* Мобайл: себет bottom sheet */}
+      {cartOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div className="absolute inset-0 bg-slate-900/40" onClick={() => setCartOpen(false)} />
+          <div className="absolute inset-x-0 bottom-0 flex max-h-[88vh] flex-col rounded-t-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">
+              <h2 className="font-semibold text-slate-900">{t.pos.cart}</h2>
+              <div className="flex items-center gap-3">
+                {cart.length > 0 && (
+                  <button
+                    onClick={clearCart}
+                    className="text-xs font-medium text-rose-500 hover:text-rose-700"
+                  >
+                    {t.actions.clear}
+                  </button>
+                )}
+                <button
+                  onClick={() => setCartOpen(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100"
+                  aria-label="close"
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            {cartList}
+            {cartParams}
+          </div>
+        </div>
+      )}
 
       {/* Заказ жасалды модалы */}
       {confirmation && (

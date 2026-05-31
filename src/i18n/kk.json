@@ -146,6 +146,7 @@
     "qty": "саны",
     "notAvailable": "Жоқ",
     "orderCreated": "Заказ жасалды",
+    "viewCart": "Себетті көру",
     "paymentMethods": { "kaspi": "Kaspi", "cash": "Қолма-қол", "card": "Карта" }
   },
   "menu": {
