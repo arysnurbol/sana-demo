@@ -11,7 +11,8 @@ export default function AdminLayout() {
   const t = useT()
   const navigate = useNavigate()
   const resetDemo = useStore((s) => s.resetDemo)
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(false) // desktop: жинау
+  const [mobileOpen, setMobileOpen] = useState(false) // mobile: drawer
 
   const sections = [
     {
@@ -34,53 +35,74 @@ export default function AdminLayout() {
     },
   ]
 
+  // Desktop: collapsed күйіне қарай ені. Mobile: drawer (translate).
+  const asideWidth = collapsed ? 'lg:w-[68px]' : 'lg:w-60'
+  const mainPad = collapsed ? 'lg:pl-[68px]' : 'lg:pl-60'
+
   return (
     <div className="flex min-h-screen bg-slate-50">
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 z-30 bg-slate-900/40 lg:hidden"
+        />
+      )}
+
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-20 flex flex-col border-r border-slate-200 bg-white transition-all duration-200 ${
-          collapsed ? 'w-[68px]' : 'w-60'
+        className={`fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-slate-200 bg-white transition-transform duration-200 lg:translate-x-0 ${asideWidth} ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Логотип — басты бетке өтеді */}
-        <div className="flex h-16 items-center px-4">
+        <div className="flex h-16 items-center justify-between px-4">
           <Link to="/" className="transition hover:opacity-70" title={t.common.backHome}>
             {collapsed ? (
-              <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-gradient-to-br from-emerald-500 to-teal-700 text-sm font-extrabold text-white">
+              <span className="hidden h-9 w-9 items-center justify-center rounded-[10px] bg-gradient-to-br from-emerald-500 to-teal-700 text-sm font-extrabold text-white lg:flex">
                 S
               </span>
             ) : (
               <Logo />
             )}
           </Link>
+          {/* Mobile-да жабу батырмасы */}
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 lg:hidden"
+            aria-label="close"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
         </div>
 
         {/* Навигация */}
         <nav className="flex-1 overflow-y-auto px-3 py-2">
           {sections.map((sec) => (
             <div key={sec.title} className="mb-4">
-              {!collapsed && (
-                <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                  {sec.title}
-                </p>
-              )}
+              <p className={`px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400 ${collapsed ? 'lg:hidden' : ''}`}>
+                {sec.title}
+              </p>
               <div className="flex flex-col gap-0.5">
                 {sec.links.map((l) => (
                   <NavLink
                     key={l.to}
                     to={l.to}
                     end={l.end}
+                    onClick={() => setMobileOpen(false)}
                     title={collapsed ? l.label : undefined}
                     className={({ isActive }) =>
                       `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
                         isActive
                           ? 'bg-slate-900 text-white shadow-sm'
                           : 'text-slate-600 hover:bg-slate-100'
-                      } ${collapsed ? 'justify-center' : ''}`
+                      } ${collapsed ? 'lg:justify-center' : ''}`
                     }
                   >
                     <Icon name={l.icon} className="h-[18px] w-[18px] shrink-0" />
-                    {!collapsed && <span>{l.label}</span>}
+                    <span className={collapsed ? 'lg:hidden' : ''}>{l.label}</span>
                   </NavLink>
                 ))}
               </div>
@@ -93,24 +115,27 @@ export default function AdminLayout() {
           <button
             title={collapsed ? t.nav.settings : undefined}
             className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition hover:bg-slate-100 ${
-              collapsed ? 'justify-center' : ''
+              collapsed ? 'lg:justify-center' : ''
             }`}
           >
             <Icon name="settings" className="h-[18px] w-[18px] shrink-0" />
-            {!collapsed && <span>{t.nav.settings}</span>}
+            <span className={collapsed ? 'lg:hidden' : ''}>{t.nav.settings}</span>
           </button>
         </div>
       </aside>
 
       {/* Main */}
-      <div className={`flex flex-1 flex-col transition-all duration-200 ${collapsed ? 'pl-[68px]' : 'pl-60'}`}>
+      <div className={`flex flex-1 flex-col transition-all duration-200 ${mainPad}`}>
         {/* Header */}
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-slate-200 bg-white/90 px-5 backdrop-blur">
-          <div className="flex items-center gap-3">
-            {/* Sidebar toggle — TapLead-тегідей header-дің сол жағында */}
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-2 border-b border-slate-200 bg-white/90 px-3 backdrop-blur sm:px-5">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            {/* Mobile: drawer ашу / Desktop: sidebar жинау */}
             <button
-              onClick={() => setCollapsed((c) => !c)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+              onClick={() => {
+                if (window.innerWidth >= 1024) setCollapsed((c) => !c)
+                else setMobileOpen(true)
+              }}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
               title="Sidebar"
             >
               <Icon name="panel" className="h-5 w-5" />
@@ -118,14 +143,14 @@ export default function AdminLayout() {
             <Badge tone="amber" dot>
               {t.demoMode}
             </Badge>
-            <span className="hidden font-medium text-slate-700 sm:inline">{t.company}</span>
+            <span className="hidden truncate font-medium text-slate-700 sm:inline">{t.company}</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <LangToggle />
+          <div className="flex shrink-0 items-center gap-2">
+            <LangToggle className="hidden sm:inline-flex" />
             <button
               onClick={() => navigate('/demo')}
-              className="hidden rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 sm:block"
+              className="hidden rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 md:block"
             >
               {t.actions.roleSwitch}
             </button>
@@ -155,7 +180,7 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 sm:p-6">
           <Outlet />
         </main>
       </div>
